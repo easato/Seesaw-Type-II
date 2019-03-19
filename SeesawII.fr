@@ -425,36 +425,33 @@ M$ClassesDescription = {
       ClassName        -> D1,
       SelfConjugate    -> False,
       Mass             -> {Mtr1,10^4},
-      PropagatorLabel -> "D1",
-      PropagatorType  -> D,
-      PropagatorArrow -> Foward,
-      PDG             -> 8000022,
-      ParticleName    -> "D1",
-      FullName        -> "Scalar 1"
+      PropagatorLabel  -> "D1",
+      PropagatorType   -> D,
+      PropagatorArrow  -> Foward,
+      ParticleName     -> "D1",
+      FullName         -> "Scalar 1"
     },
 
     S[5] == {
       ClassName        -> D2,
       SelfConjugate    -> False,
       Mass             -> {Mtr2,10^4},
-      PropagatorLabel -> "D2",
-      PropagatorType  -> D,
-      PropagatorArrow -> Foward,
-      PDG             -> 8000024,
-      ParticleName    -> "D2",
-      FullName        -> "Scalar 2"
+      PropagatorLabel  -> "D2",
+      PropagatorType   -> D,
+      PropagatorArrow  -> Foward,
+      ParticleName     -> "D2",
+      FullName         -> "Scalar 2"
     },
 
     S[6] == {
       ClassName        -> D3,
       SelfConjugate    -> False,
       Mass             -> {Mtr3,10^4},
-      PropagatorLabel -> "D3",
-      PropagatorType  -> D,
-      PropagatorArrow -> Foward,
-      PDG             -> 8000026,
-      ParticleName    -> "D3",
-      FullName        -> "Scalar 3"
+      PropagatorLabel  -> "D3",
+      PropagatorType   -> D,
+      PropagatorArrow  -> Foward,
+      ParticleName     -> "D3",
+      FullName         -> "Scalar 3"
     },
 
     (* Scalar Triplet: Unphysical Scalars*)
@@ -463,6 +460,7 @@ M$ClassesDescription = {
       ClassName     -> Di,
       Unphysical    -> True,
       SelfConjugate -> False,
+      QuantumNumbers -> {Y->2},
       Indices       -> {Index[SU2T]},
       FlavorIndex   -> SU2T,
       Definitions   -> { Di[1] :> D1, Di[2] :> D2, Di[3] :> D3}
@@ -654,7 +652,7 @@ M$Parameters = {
     BlockName     -> TripMass,
     OrderBlock    -> 3,
     Value         -> 10^4,
-    Description   -> "D13 mass"
+    Description   -> "D3 mass"
   },
 
   hhcouple == {
@@ -856,7 +854,7 @@ LGauge := Block[{mu,nu,ii,aa},
 
 LFermions := Block[{mu},
   ExpandIndices[I*(
-    QLbar.Ga[mu].DC[QL, mu] + lbar.Ga[mu].DC[l, mu] + 1/2 vlbar.Ga[mu].del[vl,mu] + uRbar.Ga[mu].DC[uR, mu] + dRbar.Ga[mu].DC[dR, mu] + lRbar.Ga[mu].DC[lR, mu]),
+    QLbar.Ga[mu].DC[QL, mu] + lbar.Ga[mu].DC[l, mu] + 1/2 vlbar.Ga[mu].del[vl,mu] + uRbar.Ga[mu].DC[uR, mu] + dRbar.Ga[mu].DC[dR, mu]),
   FlavorExpand->{SU2W,SU2D}]];
 
 LHiggs := Block[{ii,mu, feynmangaugerules},
@@ -878,18 +876,20 @@ LYukawa := Block[{sp,ii,jj,cc,ff1,ff2,ff3,yuk,feynmangaugerules},
  LTripletKin := Block[{ii,mu},
   feynmangaugerules = If[Not[FeynmanGauge], {G0|GP|GPbar ->0}, {}];
 
-   ExpandIndices[DC[Dibar[ii],mu] DC[Di[ii].mu], FlavorExpand -> {SU2T,SU2W}]/.feynmangaugerules
+   ExpandIndices[DC[Dibar[ii],mu] DC[Di[ii],mu], FlavorExpand -> {SU2T,SU2W}]/.feynmangaugerules
    ];
 
  LTripletMass := Block[{ii},
  ExpandIndices[- (Mtrvet[ii])^2 Dibar[ii] Di[ii],FlavorExpand->{SU2T}]
 ];
 
-LTripletInt := Block[{lag,feynmangaugerules},
+LTripletInt := Block[{lag,lagsc,lagyuk,sp,ff1,ff2,feynmangaugerules},
   feynmangaugerules = If[Not[FeynmanGauge], {G0|GP|GPbar ->0}, {}];
 
-  lag = hhcouple ( Phi[1] DPPbar Phi[1] + Phi[2] Phi[2] D0bar)
-        + ScalarYuk[ii,jj] ;
+  lagsc = hhcouple ( Phi[1] DPPbar Phi[1] + Phi[2] Phi[2] D0bar);
+  lagyuk = ScalarYuk[ff1,ff2] (CC[LLbar[sp,1,ff1]] LL[sp,1,ff2] D0 - CC[LLbar[sp,2,ff1]] LL[sp,2,ff2] DPP + (1/Sqrt[2]) ( CC[LLbar[sp,1,ff1]] LL[sp,2,ff2] -  CC[LLbar[sp,2,ff1]] LL[sp,1,ff2]) DP);
+
+  lag = lagsc + lagyuk;
 
   lag+HC[lag]/.feynmangaugerules
   ];
