@@ -479,7 +479,7 @@ M$ClassesDescription = {
       Unphysical       -> True,
       SelfConjugate    -> False,
       QuantumNumbers   -> {Q->1},
-      Definitions      -> {D0 :> D3}
+      Definitions      -> {DP :> D3}
     },
 
     S[10] == {
@@ -487,7 +487,7 @@ M$ClassesDescription = {
       Unphysical       -> True,
       SelfConjugate    -> False,
       QuantumNumbers   -> {Q->2},
-      Definitions      -> {D0 :> (1/Sqrt[2]) (D1 - I D2)}
+      Definitions      -> {DPP :> (1/Sqrt[2]) (D1 - I D2)}
     },
 
 (* Higgs: unphysical scalars  *)
