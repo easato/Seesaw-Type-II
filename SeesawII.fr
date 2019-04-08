@@ -3,10 +3,6 @@
 (******                                                                                                   ******)
 (******     Authors: Eduardo A. Sato                                                                      ******)
 (******                                                                                                   ******)
-(****** Choose whether Feynman gauge is desired.                                                          ******)
-(****** If set to False, unitary gauge is assumed.                                                          ****)
-(****** Feynman gauge is especially useful for CalcHEP/CompHEP where the calculation is 10-100 times faster. ***)
-(****** Feynman gauge is not supported in MadGraph and Sherpa.                                              ****)
 (***************************************************************************************************************)
 
 
@@ -17,35 +13,26 @@ M$ModelName = "Seesaw type II";
 
 M$Information = {
   Authors      -> {"Eduardo A. Sato"},
-  Version      -> "0.0.1",
+  Version      -> "1.0",
   Date         -> "21-02-2019",
   Institutions -> {"Universidade Estadual de Campinas"},
   Emails       -> {"easato@ifi.unicamp.br"},
   URLs         -> "---"
 };
 
-FeynmanGauge = True;
-
-(* ************************** *)
-(* ***** NLO Variables ****** *)
-(******************************)
-
-FR$LoopSwitches = {{Gf, MW}};
-FR$RmDblExt = { ymb -> MB, ymc -> MC, ymdo -> MD, yme -> Me,
-   ymm -> MMU, yms -> MS, ymt -> MT, ymtau -> MTA, ymup -> MU};
-
 (* ************************** *)
 (* *****  Change  log   ***** *)
 (* ************************** *)
 
-(* v0.01 Neutrino SelfConjugate->True, added variables for the neutrino mass *)
-(* v0.02 CKM Matrix Implemented *)
-(* v0.03 Scalar Triplet Implemented (only kinect and mass term) *)
+(* v0.1 Neutrino SelfConjugate->True, added variables for the neutrino mass *)
+(* v0.2 CKM Matrix Implemented *)
+(* v0.3 Scalar Triplet Implemented (only kinect and mass term) *)
+(* v1.0 Scalar Triplet fully implemented *)
 
 (* ************************** *)
 (* *****      vevs      ***** *)
 (* ************************** *)
-M$vevs = { {Phi[2],vev} };
+   M$vevs = { {Phi[2],vev} };
 
 (* ************************** *)
 (* *****  Gauge groups  ***** *)
@@ -92,18 +79,6 @@ IndexStyle[SU2D,       k];
 IndexStyle[Gluon,      a];
 IndexStyle[Colour,     m];
 IndexStyle[Generation, f];
-
-
-(* ************************** *)
-(* *** Interaction orders *** *)
-(* ***  (as used by mg5)  *** *)
-(* ************************** *)
-
-M$InteractionOrderHierarchy = {
-  {QCD, 1},
-  {QED, 2}
-};
-
 
 (* ************************** *)
 (* **** Particle classes **** *)
@@ -163,65 +138,6 @@ M$ClassesDescription = {
     FullName         -> "G"
   },
 
-(* Ghosts: related to physical gauge bosons *)
-  U[1] == {
-    ClassName       -> ghA,
-    SelfConjugate   -> False,
-    Ghost           -> A,
-    QuantumNumbers  -> {GhostNumber -> 1},
-    Mass            -> 0,
-    Width	    -> 0,
-    PropagatorLabel -> "uA",
-    PropagatorType  -> GhostDash,
-    PropagatorArrow -> Forward
-  },
-  U[2] == {
-    ClassName       -> ghZ,
-    SelfConjugate   -> False,
-    Ghost           -> Z,
-    QuantumNumbers  -> {GhostNumber -> 1},
-    Mass            -> {MZ,91.1876},
-    Width	    -> {WZ, 2.4952},
-    PropagatorLabel -> "uZ",
-    PropagatorType  -> GhostDash,
-    PropagatorArrow -> Forward
-  },
-  U[31] == {
-    ClassName       -> ghWp,
-    SelfConjugate   -> False,
-    Ghost           -> W,
-    QuantumNumbers  -> {GhostNumber -> 1, Q -> 1},
-    Mass            -> {MW,Internal},
-    Width           -> {WW, 2.085},
-    PropagatorLabel -> "uWp",
-    PropagatorType  -> GhostDash,
-    PropagatorArrow -> Forward
-  },
-  U[32] == {
-    ClassName       -> ghWm,
-    SelfConjugate   -> False,
-    Ghost           -> Wbar,
-    QuantumNumbers  -> {GhostNumber -> 1, Q -> -1},
-    Mass            -> {MW,Internal},
-    Width           -> {WW, 2.085},
-    PropagatorLabel -> "uWm",
-    PropagatorType  -> GhostDash,
-    PropagatorArrow -> Forward
-  },
-  U[4] == {
-    ClassName       -> ghG,
-    SelfConjugate   -> False,
-    Indices         -> {Index[Gluon]},
-    Ghost           -> G,
-    PDG             -> 82,
-    QuantumNumbers  ->{GhostNumber -> 1},
-    Mass            -> 0,
-    Width	    -> 0,
-    PropagatorLabel -> "uG",
-    PropagatorType  -> GhostDash,
-    PropagatorArrow -> Forward
-  },
-
 (* Gauge bosons: unphysical vector fields *)
   V[11] == {
     ClassName     -> B,
@@ -238,24 +154,6 @@ M$ClassesDescription = {
     Definitions   -> { Wi[mu_,1] -> (Wbar[mu]+W[mu])/Sqrt[2], Wi[mu_,2] -> (Wbar[mu]-W[mu])/(I*Sqrt[2]), Wi[mu_,3] -> cw Z[mu] + sw A[mu]}
   },
 
-(* Ghosts: related to unphysical gauge bosons *)
-  U[11] == {
-    ClassName     -> ghB,
-    Unphysical    -> True,
-    SelfConjugate -> False,
-    Ghost         -> B,
-    Definitions   -> { ghB -> -sw ghZ + cw ghA}
-  },
-  U[12] == {
-    ClassName     -> ghWi,
-    Unphysical    -> True,
-    SelfConjugate -> False,
-    Ghost         -> Wi,
-    Indices       -> {Index[SU2W]},
-    FlavorIndex   -> SU2W,
-    Definitions   -> { ghWi[1] -> (ghWp+ghWm)/Sqrt[2], ghWi[2] -> (ghWm-ghWp)/(I*Sqrt[2]), ghWi[3] -> cw ghZ+sw ghA}
-  } ,
-
 (* Fermions: physical fields *)
   F[1] == {
     ClassName        -> vl,
@@ -263,7 +161,7 @@ M$ClassesDescription = {
     Indices          -> {Index[Generation]},
     FlavorIndex      -> Generation,
     SelfConjugate    -> True,
-    Mass             -> {Mvl,{Mv1,0},{Mv2,0},{Mv3,0}},
+    Mass             -> {Mvl,{Mv1,0.001},{Mv2,0.001},{Mv3,0.001}},
     Width            -> 0,
     PropagatorLabel  -> {"v", "ve", "vm", "vt"} ,
     PropagatorType   -> S,
@@ -377,46 +275,29 @@ M$ClassesDescription = {
 
 (* Higgs: physical scalars  *)
   S[1] == {
-    ClassName       -> H,
-    SelfConjugate   -> True,
-    Mass            -> {MH,125},
+    ClassName       -> phi0,
+    SelfConjugate   -> False,
+    Mass            -> {Mphi0,125},
+    Width           -> {WH,0.00407},
+    PropagatorLabel -> "H",
+    PropagatorType  -> D,
+    PropagatorArrow -> None,
+    ParticleName    -> "phi0",
+    FullName        -> "phi0"
+  },
+
+  S[2] == {
+    ClassName       -> phiP,
+    SelfConjugate   -> False,
+    Mass            -> {MphiP,125},
+    QuantumNumbers  -> {Q -> 1},
     Width           -> {WH,0.00407},
     PropagatorLabel -> "H",
     PropagatorType  -> D,
     PropagatorArrow -> None,
     PDG             -> 25,
-    ParticleName    -> "H",
-    FullName        -> "H"
-  },
-
-(* Higgs: physical scalars  *)
-  S[2] == {
-    ClassName       -> G0,
-    SelfConjugate   -> True,
-    Goldstone       -> Z,
-    Mass            -> {MZ, 91.1876},
-    Width           -> {WZ, 2.4952},
-    PropagatorLabel -> "Go",
-    PropagatorType  -> D,
-    PropagatorArrow -> None,
-    PDG             -> 250,
-    ParticleName    -> "G0",
-    FullName        -> "G0"
-  },
-  S[3] == {
-    ClassName        -> GP,
-    SelfConjugate    -> False,
-    Goldstone        -> W,
-    Mass             -> {MW, Internal},
-    QuantumNumbers   -> {Q -> 1},
-    Width            -> {WW, 2.085},
-    PropagatorLabel  -> "GP",
-    PropagatorType   -> D,
-    PropagatorArrow  -> None,
-    PDG              -> 251,
-    ParticleName     -> "G+",
-    AntiParticleName -> "G-",
-    FullName         -> "GP"
+    ParticleName    -> "phiP",
+    FullName        -> "phiP"
   },
 
   (* Scalar Triplet: physical scalars*)
@@ -498,7 +379,7 @@ M$ClassesDescription = {
     FlavorIndex    -> SU2D,
     SelfConjugate  -> False,
     QuantumNumbers -> {Y -> 1/2},
-    Definitions    -> { Phi[1] -> -I GP, Phi[2] -> (vev + H + I G0)/Sqrt[2]  }
+    Definitions    -> { Phi[1] -> phiP, Phi[2] -> phi0  }
   }
 };
 
@@ -806,12 +687,6 @@ M$Parameters = {
     ParameterName    -> G,
     Description      -> "Strong coupling constant at the Z pole"
   },
-  vev == {
-    ParameterType    -> Internal,
-    Value            -> 2*MW*sw/ee,
-    InteractionOrder -> {QED,-1},
-    Description      -> "Higgs vacuum expectation value"
-  },
   lam == {
     ParameterType    -> Internal,
     Value            -> MH^2/(2*vev^2),
@@ -889,66 +764,38 @@ LFermions := Block[{mu},
     QLbar.Ga[mu].DC[QL, mu] + lbar.Ga[mu].DC[l, mu] + 1/2 vlbar.Ga[mu].del[vl,mu] + uRbar.Ga[mu].DC[uR, mu] + dRbar.Ga[mu].DC[dR, mu]),
   FlavorExpand->{SU2W,SU2D}]];
 
-LHiggs := Block[{ii,mu, feynmangaugerules},
-  feynmangaugerules = If[Not[FeynmanGauge], {G0|GP|GPbar ->0}, {}];
-
-  ExpandIndices[DC[Phibar[ii],mu] DC[Phi[ii],mu] + muH^2 Phibar[ii] Phi[ii] - lam Phibar[ii] Phi[ii] Phibar[jj] Phi[jj], FlavorExpand->{SU2D,SU2W}]/.feynmangaugerules
+LHiggs := Block[{ii,mu},
+  ExpandIndices[DC[Phibar[ii],mu] DC[Phi[ii],mu] + muH^2 Phibar[ii] Phi[ii] - lam Phibar[ii] Phi[ii] Phibar[jj] Phi[jj], FlavorExpand->{SU2D,SU2W}]
  ];
 
-LYukawa := Block[{sp,ii,jj,cc,ff1,ff2,ff3,yuk,feynmangaugerules},
-  feynmangaugerules = If[Not[FeynmanGauge], {G0|GP|GPbar ->0}, {}];
-
+LYukawa := Block[{sp,ii,jj,cc,ff1,ff2,ff3,yuk},
   yuk = ExpandIndices[
    -yd[ff2, ff3] CKM[ff1, ff2] QLbar[sp, ii, ff1, cc].dR [sp, ff3, cc] Phi[ii] -
     yl[ff1, ff3] LLbar[sp, ii, ff1].lR [sp, ff3] Phi[ii] -
     yu[ff1, ff2] QLbar[sp, ii, ff1, cc].uR [sp, ff2, cc] Phibar[jj] Eps[ii, jj], FlavorExpand -> SU2D];
-  yuk+HC[yuk]/.feynmangaugerules
+  yuk+HC[yuk]
  ];
 
  LTripletKin := Block[{ii,mu},
-  feynmangaugerules = If[Not[FeynmanGauge], {G0|GP|GPbar ->0}, {}];
-
-   ExpandIndices[DC[Dibar[ii],mu] DC[Di[ii],mu], FlavorExpand -> {SU2T,SU2W}]/.feynmangaugerules
+   ExpandIndices[DC[Dibar[ii],mu] DC[Di[ii],mu], FlavorExpand -> {SU2T,SU2W}]
    ];
 
  LTripletMass := Block[{ii},
  ExpandIndices[- (Mtrvet[ii])^2 Dibar[ii] Di[ii],FlavorExpand->{SU2T}]
 ];
 
-LTripletInt := Block[{lag,lagsc,lagyuk,pot,ii,jj,sp,ff1,ff2,feynmangaugerules},
-  feynmangaugerules = If[Not[FeynmanGauge], {G0|GP|GPbar ->0}, {}];
-
+LTripletInt := Block[{lag,lagsc,lagyuk,pot,ii,jj,sp,ff1,ff2},
   lagsc =  hhcouple ( Phi[1] DPPbar Phi[1] + Phi[2] Phi[2] D0bar);
   lagyuk = ExpandIndices[ScalarYuk[ff1,ff2] (CC[LLbar[sp,1,ff1]] LL[sp,1,ff2] D0 - CC[LLbar[sp,2,ff1]] LL[sp,2,ff2] DPP - (1/Sqrt[2]) ( CC[LLbar[sp,1,ff1]] LL[sp,2,ff2] +  CC[LLbar[sp,2,ff1]] LL[sp,1,ff2]) DP),FlavorExpand->Generation];
   pot = chi1 Dibar[ii] Di[ii] Dibar[jj] Di[jj] +
-        chi2 Phibar[ii] Phi[ii] Dibar[jj] Di[jj] +
-        chi3 (I (D3bar D2 - D2bar D3 + D1bar D3 - D3bar D1 + D2bar D1 + D1bar D2))^2 +
-        chi4 (I (D3bar D2 - D2bar D3)*(Phibar[2] Phi[1] + Phibar[1] Phi[2]) + (D1bar D3 - D3bar D1) * I (Phibar[2] Phi[1] - Phibar[1] Phi[2]) + (D2bar D1 + D1bar D2) * (Phibar[1] Phi[1] - Phibar[2] Phi[2]));
+        chi2 Phibar[ii] Phi[ii] Dibar[jj] Di[jj]
+        - chi3 ( (D3bar D2 - D2bar D3)^2 + (D1bar D3 - D3bar D1)^2 + (D2bar D1 + D1bar D2)^2) +
+        chi4 (I (D3bar D2 - D2bar D3)*(Phibar[2] Phi[1] + Phibar[1] Phi[2]) - (D1bar D3 - D3bar D1)  (Phibar[2] Phi[1] - Phibar[1] Phi[2]) + (D2bar D1 + D1bar D2) * (Phibar[1] Phi[1] - Phibar[2] Phi[2]));
   lag = lagsc + lagyuk;
 
-  lag+HC[lag]+pot/.feynmangaugerules
+  lag+HC[lag]+pot
   ];
 
 LTriplet := LTripletMass + LTripletKin + LTripletInt;
 
-LGhost := Block[{LGh1,LGhw,LGhs,LGhphi,mu, generators,gh,ghbar,Vectorize,phi1,phi2,togoldstones,doublet,doublet0},
-  (* Pure gauge piece *)
-  LGh1 = -ghBbar.del[DC[ghB,mu],mu];
-  LGhw = -ghWibar[ii].del[DC[ghWi[ii],mu],mu];
-  LGhs = -ghGbar[ii].del[DC[ghG[ii],mu],mu];
-
-  (* Scalar pieces: see Peskin pages 739-742 *)
-  (* phi1 and phi2 are the real degrees of freedom of GP *)
-  (* Vectorize transforms a doublet in a vector in the phi-basis, i.e. the basis of real degrees of freedom *)
-  gh    = {ghB, ghWi[1], ghWi[2], ghWi[3]};
-  ghbar = {ghBbar, ghWibar[1], ghWibar[2], ghWibar[3]};
-  generators = {-I/2 g1 IdentityMatrix[2], -I/2 gw PauliSigma[1], -I/2 gw PauliSigma[2], -I/2 gw PauliSigma[3]};
-  doublet = Expand[{(-I phi1 - phi2)/Sqrt[2], Phi[2]} /. MR$Definitions /. vev -> 0];
-  doublet0 = {0, vev/Sqrt[2]};
-  Vectorize[{a_, b_}]:= Simplify[{Sqrt[2] Re[Expand[a]], Sqrt[2] Im[Expand[a]], Sqrt[2] Re[Expand[b]], Sqrt[2] Im[Expand[b]]}/.{Im[_]->0, Re[num_]->num}];
-  togoldstones := {phi1 -> (GP + GPbar)/Sqrt[2], phi2 -> (-GP + GPbar)/(I Sqrt[2])};
-  LGhphi=Plus@@Flatten[Table[-ghbar[[kkk]].gh[[lll]] Vectorize[generators[[kkk]].doublet0].Vectorize[generators[[lll]].(doublet+doublet0)],{kkk,4},{lll,4}]] /.togoldstones;
-
-ExpandIndices[ LGhs + If[FeynmanGauge, LGh1 + LGhw + LGhphi,0], FlavorExpand->SU2W]];
-
-LSII:= LGauge + LFermions + LHiggs + LYukawa + LGhost + LTriplet;
+LSII:= LGauge + LFermions + LHiggs + LYukawa + LTriplet;
